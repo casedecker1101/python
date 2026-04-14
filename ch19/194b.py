@@ -12,7 +12,6 @@ if not os.path.exists(file_path):
     print("File missing, cannot continue.")  # Tell the user why we are stopping.
     raise SystemExit  # Exit now so later file reads do not crash.
 
-
 def search_artist(term):
     search_term = term.lower()  # Lowercase once for case-insensitive matching.
     matches = []  # Collect formatted results here.
@@ -25,7 +24,6 @@ def search_artist(term):
                 matches.append(f"{artist_name} = {row['track_name']} ({row['year']})")
 
     return matches
-
 
 def search_song(term):
     search_term = term.lower()  # Lowercase once for case-insensitive matching.
@@ -128,7 +126,6 @@ def two_decades(term):
 
     return matches
 
-
 def highest_cluster():
     # Step 1: Storage - Key is cluster id, value is count of songs in that cluster
     cluster_counts = {}  # Maps cluster id -> song count.
@@ -163,16 +160,21 @@ def highest_cluster():
 def era_most_songs():
     eraMS = {}
 
-    while open(file_path, newline="",encoding="utf-8") as eraMS:
-        eras = row["era"]
-        songs = row["track_name"]
+    with open(file_path, newline="", encoding="utf-8") as era_file:
+        reader = csv.DictReader(era_file)
+        
+        for row in reader:
+            era = row["era"]
+            track_name = row["track_name"]
 
-        for era in eras:
-            if era not in eras:
-                if song not in songs:
-                    eraMS[era] = ["songs"]:set()
-                    eraMS[era]["songs"].add(song)
-        return eraMS
+            if era not in eraMS:
+                if track_name not in eraMS:
+                    eraMS[era] = {"songs": set()}
+                    eraMS[era]["songs"].add(track_name)
+        top_era = max(eraMS, key=eraMS.get)
+        
+    results = [f"Era with the most songs: {top_era} ({track_name}} songs)"]
+    return results
             
 def main():
     print("--- Billboard 100 Through The Decades ---")
@@ -217,7 +219,8 @@ def main():
             song = input("Enter the song to search for: ")
             song_matches = search_song(song)
             top_artist_results = most_songs(song)  # Extra insight for song searches.
-
+            most_songs_era = era_most_songs()
+            
             if song_matches:
                 for match in song_matches:
                     print(match)
@@ -227,6 +230,10 @@ def main():
             if top_artist_results:
                 for line in top_artist_results:
                     print(line)
+            
+            if most_songs_era:
+                for hit in most_songs_era:
+                    print(hit)
         
         elif search_type == "cluster":
             cluster_results = highest_cluster()  # Get the largest cluster info.

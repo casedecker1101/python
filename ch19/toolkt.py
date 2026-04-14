@@ -1,3 +1,9 @@
+# quick use of lambda to find max value
+top_era = max(era_to_songs, key=lambda era: len(era_to_songs[era]["so
+top_count = len(era_to_songs[top_era]["songs"])
+    
+results = [f"Era with the most songs: {top_era} ({top_count} songs)"]
+
 # Simple CSV reader and header row search
 def search_artist(term):
     matches = []
