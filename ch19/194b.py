@@ -40,6 +40,22 @@ def search_song(term):
 
     return matches
 
+def cluster_genres():
+    genres_clusters = {} # Maps cluster id -> set of genres in that cluster
+    with open(file_path, newline="", encoding="utf-8") as genres_file:
+        reader = csv.DictReader(genres_file)
+        for row in reader:
+            genre = row["era"]
+            cluster_id = row["cluster"]
+            if cluster_id not in genres_clusters:
+                genres_clusters[cluster_id] = set()
+                genres_clusters[cluster_id].add(genre)
+    results = []
+
+    for cluster_id, genres in genres_clusters.items():
+        genre_list = ", ".join(sorted(genres)) # sort genres for stable output
+        results.append(f"Cluster {cluster_id} contains genres: {genre_list}")
+    return results
 
 def most_songs(term):
     artist_matches = {}  # Maps artist key -> display name + set of songs.
@@ -145,6 +161,20 @@ def highest_cluster():
     results = [f"Largest cluster: {top_cluster} ({top_count} songs)"]
     return results
 
+def era_most_songs():
+    eraMS = {}
+
+    while open(file_path, newline="",encoding="utf-8") as eraMS:
+        eras = row["era"]
+        songs = row["track_name"]
+
+        for era in eras:
+            if era not in eras:
+                if song not in songs:
+                    eraMS[era] = ["songs"]:set()
+                    eraMS[era]["songs"].add(song)
+        return eraMS
+            
 def main():
     print("--- Billboard 100 Through The Decades ---")
     print("Type 'exit' to stop searching.\n")
@@ -201,15 +231,18 @@ def main():
         
         elif search_type == "cluster":
             cluster_results = highest_cluster()  # Get the largest cluster info.
-
+            genre_results = cluster_genres() # Get genres in each cluster for extra insight.
+            
             if cluster_results:
                 for result in cluster_results:
+                    print(result)
+            if genre_results:
+                for result in genre_results:
                     print(result)
             else:
                 print("No cluster data found.")
         else:
             print("Please type 'artist', 'song', or 'cluster'.")
-
 
 if __name__ == "__main__":
     main()  # Entry point when running this file directly.
