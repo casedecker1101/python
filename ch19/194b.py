@@ -157,25 +157,24 @@ def highest_cluster():
     results = [f"Largest cluster: {top_cluster} ({top_count} songs)"]
     return results
 
-def era_most_songs():
-    eraMS = {}
+def era_songs():
+    era_to_songs = {}
 
-    with open(file_path, newline="", encoding="utf-8") as era_file:
+    with open(file_path,newline="",encoding="utt-8")as era_file:
         reader = csv.DictReader(era_file)
-        
         for row in reader:
             era = row["era"]
-            track_name = row["track_name"]
+            song = row["track_name"]
+            if era not in era_to_songs:
+                    era_to_songs[era] = {"songs": set()}
+            era_to_songs[era]["songs"].add(song)
 
-            if era not in eraMS:
-                if track_name not in eraMS:
-                    eraMS[era] = {"songs": set()}
-                    eraMS[era]["songs"].add(track_name)
-        top_era = max(eraMS, key=eraMS.get)
+
+    top_era = max(era_to_songs, key=lambda era: len(era_to_songs[era]["songs"]))
+    top_count = len(era_to_songs[top_era]["songs"])
         
-    results = [f"Era with the most songs: {top_era} ({track_name}} songs)"]
-    return results
-            
+    results = [f"Era with the most songs: {top_era} ({top_count} songs)"]
+               
 def main():
     print("--- Billboard 100 Through The Decades ---")
     print("Type 'exit' to stop searching.\n")
