@@ -15,19 +15,17 @@
 # -- search era
 # -- sub search era with the most songs
 
-import os
 import csv
+from pathlib import Path
 
-# variables 
+# variables
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data"
 file_name = "EvolutionPopUSA_MainData.csv"
-folder = "data"
-file_path = os.path.join(folder, file_name)
+file_path = DATA_DIR / file_name
 
-if not os.path.exists(folder):
-    os.makedirs(folder)
-
-if not os.path.exists(file_path):
-    print("File missing, cannot continue.")
+if not file_path.exists():
+    print(f"File missing, cannot continue: {file_path}")
     raise SystemExit
 
 def search_artist(term):

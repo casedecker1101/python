@@ -1,32 +1,57 @@
-import os
+"""Billboard 100 Through The Decades.
+
+A beginner-friendly CSV search program for artists, songs, clusters, and eras.
+"""
+
 import csv
+from pathlib import Path
 
-file_name = "EvolutionPopUSA_MainData.csv"  # Name of the CSV we expect.
-folder = "data"  # Folder where the CSV should live.
-file_path = os.path.join(folder, file_name)  # Full path used by all functions.
+BASE_DIR = Path(__file__).resolve().parent  # Folder containing this script.
+DATA_DIR = BASE_DIR / "data"  # Chapter-local data folder.
+FILE_NAME = "EvolutionPopUSA_MainData.csv"  # Name of the CSV we expect.
+file_path = DATA_DIR / FILE_NAME  # Full path used by all functions.
 
-if not os.path.exists(folder):
-    os.makedirs(folder)  # Create the folder once if missing.
 
-if not os.path.exists(file_path):
-    print("File missing, cannot continue.")  # Tell the user why we are stopping.
+def normalize_text(value):
+    """Return lowercase text for consistent searching."""
+    return value.strip().lower()
+
+
+def artist_name_matches(search_term, artist_name, artist_name_clean):
+    """Return True when the search term matches the artist name cleanly."""
+    cleaned_search = "".join(ch for ch in search_term if ch.isalnum())
+    normalized_words = [
+        "".join(ch for ch in word.lower() if ch.isalnum())
+        for word in artist_name.split()
+    ]
+
+    if " " in search_term:
+        return search_term in artist_name.lower()
+
+    return cleaned_search in normalized_words or cleaned_search == artist_name_clean.lower()
+
+if not file_path.exists():
+    print(f"File missing, cannot continue: {file_path}")
     raise SystemExit  # Exit now so later file reads do not crash.
 
 def search_artist(term):
-    search_term = term.lower()  # Lowercase once for case-insensitive matching.
+    """Return all artist matches for the user search term."""
+    search_term = normalize_text(term)
     matches = []  # Collect formatted results here.
 
     with open(file_path, newline="", encoding="utf-8") as artist_list:
         reader = csv.DictReader(artist_list)
         for row in reader:
             artist_name = row["artist_name"]
-            if search_term in artist_name.lower():
+            artist_name_clean = row["artist_name_clean"]
+            if artist_name_matches(search_term, artist_name, artist_name_clean):
                 matches.append(f"{artist_name} = {row['track_name']} ({row['year']})")
 
     return matches
 
 def search_song(term):
-    search_term = term.lower()  # Lowercase once for case-insensitive matching.
+    """Return all song-title matches for the user search term."""
+    search_term = normalize_text(term)  # Lowercase once for case-insensitive matching.
     matches = []  # Collect formatted results here.
 
     with open(file_path, newline="", encoding="utf-8") as songs_file:
@@ -38,26 +63,29 @@ def search_song(term):
 
     return matches
 
-def cluster_genres():
-    genres_clusters = {} # Maps cluster id -> set of genres in that cluster
-    with open(file_path, newline="", encoding="utf-8") as genres_file:
-        reader = csv.DictReader(genres_file)
-        for row in reader:
-            genre = row["era"]
-            cluster_id = row["cluster"]
-            if cluster_id not in genres_clusters:
-                genres_clusters[cluster_id] = set()
-                genres_clusters[cluster_id].add(genre)
-    results = []
+def cluster_eras():
+    """Return the eras represented inside each cluster."""
+    eras_by_cluster = {}  # Maps cluster id -> set of eras in that cluster.
 
-    for cluster_id, genres in genres_clusters.items():
-        genre_list = ", ".join(sorted(genres)) # sort genres for stable output
-        results.append(f"Cluster {cluster_id} contains genres: {genre_list}")
+    with open(file_path, newline="", encoding="utf-8") as source_file:
+        reader = csv.DictReader(source_file)
+        for row in reader:
+            era_label = row["era"]
+            cluster_id = row["cluster"]
+            if cluster_id not in eras_by_cluster:
+                eras_by_cluster[cluster_id] = set()
+            eras_by_cluster[cluster_id].add(era_label)
+
+    results = []
+    for cluster_id, eras in eras_by_cluster.items():
+        era_list = ", ".join(sorted(eras))
+        results.append(f"Cluster {cluster_id} contains eras: {era_list}")
     return results
 
 def most_songs(term):
+    """Return the artist with the most matching song titles."""
     artist_matches = {}  # Maps artist key -> display name + set of songs.
-    search_term = term.lower()  # Compare using lowercase titles.
+    search_term = normalize_text(term)  # Compare using lowercase titles.
 
     with open(file_path, newline="", encoding="utf-8") as songs_list:
         reader = csv.DictReader(songs_list)
@@ -78,14 +106,10 @@ def most_songs(term):
     if not artist_matches:
         return []  # Nothing matched the song search.
 
-    top_artist_data = None  # Will store the best artist record.
-    top_song_count = -1  # Starts below any real song count.
-
-    for artist_data in artist_matches.values():
-        current_song_count = len(artist_data["songs"])
-        if current_song_count > top_song_count:
-            top_song_count = current_song_count
-            top_artist_data = artist_data
+    top_artist_data = max(
+        artist_matches.values(),
+        key=lambda artist_data: len(artist_data["songs"])
+    )
 
     unique_songs = sorted(top_artist_data["songs"])  # Sorted for stable output order.
     song_count = len(unique_songs)
@@ -100,7 +124,8 @@ def most_songs(term):
     return results
 
 def two_decades(term):
-    search_term = term.lower()  # Compare using lowercase names.
+    """Return artists that appear in two or more decades."""
+    search_term = normalize_text(term)  # Compare using lowercase names.
     artists_by_decade = {}  # Maps artist key -> display name + set of decades.
 
     with open(file_path, newline="", encoding="utf-8") as artist_list:
@@ -110,7 +135,7 @@ def two_decades(term):
             artist_name = row["artist_name"]
             artist_name_clean = row["artist_name_clean"]
 
-            if search_term in artist_name.lower() or search_term in artist_name_clean.lower():
+            if artist_name_matches(search_term, artist_name, artist_name_clean):
                 if artist_name_clean not in artists_by_decade:
                     artists_by_decade[artist_name_clean] = {
                         "display_name": artist_name,  # Name shown in output.
@@ -121,13 +146,15 @@ def two_decades(term):
     matches = []
     for artist_data in artists_by_decade.values():
         decades_found = sorted(artist_data["decades"])  # Sort for readable output.
-        if len(decades_found) > 2:
-            matches.append(f"{artist_data['display_name']} appears in {len(decades_found)} decades: {', '.join(decades_found)}")
+        if len(decades_found) >= 2:
+            matches.append(
+                f"{artist_data['display_name']} appears in {len(decades_found)} decades: {', '.join(decades_found)}"
+            )
 
     return matches
 
 def highest_cluster():
-    # Step 1: Storage - Key is cluster id, value is count of songs in that cluster
+    """Return the cluster with the greatest number of songs."""
     cluster_counts = {}  # Maps cluster id -> song count.
 
     # Step 2: Open and read the CSV file
@@ -150,7 +177,7 @@ def highest_cluster():
         return []
 
     # Step 7: Find which cluster had the highest count
-    top_cluster = max(cluster_counts, key=cluster_counts.get)
+    top_cluster = max(cluster_counts, key=lambda cluster_id: cluster_counts[cluster_id])
     top_count = cluster_counts[top_cluster]
 
     # Step 8: Build and return results like other functions
@@ -158,22 +185,26 @@ def highest_cluster():
     return results
 
 def era_songs():
+    """Return the era with the largest number of unique songs in the dataset."""
     era_to_songs = {}
 
-    with open(file_path,newline="",encoding="utt-8")as era_file:
+    with open(file_path, newline="", encoding="utf-8") as era_file:
         reader = csv.DictReader(era_file)
         for row in reader:
             era = row["era"]
             song = row["track_name"]
             if era not in era_to_songs:
-                    era_to_songs[era] = {"songs": set()}
+                era_to_songs[era] = {"songs": set()}
             era_to_songs[era]["songs"].add(song)
 
+    if not era_to_songs:
+        return []
 
     top_era = max(era_to_songs, key=lambda era: len(era_to_songs[era]["songs"]))
     top_count = len(era_to_songs[top_era]["songs"])
-        
-    results = [f"Era with the most songs: {top_era} ({top_count} songs)"]
+
+    results = [f"Era with the most songs in the dataset: {top_era} ({top_count} songs)"]
+    return results
                
 def main():
     print("--- Billboard 100 Through The Decades ---")
@@ -200,7 +231,11 @@ def main():
             break
 
         if search_type == "artist":
-            artist = input("Enter the artist to search for: ")
+            artist = input("Enter the artist to search for: ").strip()
+            if not artist:
+                print("Please enter an artist name.")
+                continue
+
             artists = search_artist(artist)
             decades = two_decades(artist)  # Extra insight for artist searches.
 
@@ -215,10 +250,14 @@ def main():
                     print(hit)
 
         elif search_type == "song":
-            song = input("Enter the song to search for: ")
+            song = input("Enter the song to search for: ").strip()
+            if not song:
+                print("Please enter a song title.")
+                continue
+
             song_matches = search_song(song)
             top_artist_results = most_songs(song)  # Extra insight for song searches.
-            most_songs_era = era_most_songs()
+            most_songs_era = era_songs()
             
             if song_matches:
                 for match in song_matches:
@@ -236,13 +275,13 @@ def main():
         
         elif search_type == "cluster":
             cluster_results = highest_cluster()  # Get the largest cluster info.
-            genre_results = cluster_genres() # Get genres in each cluster for extra insight.
-            
+            era_results = cluster_eras()  # Get the eras in each cluster for extra insight.
+
             if cluster_results:
                 for result in cluster_results:
                     print(result)
-            if genre_results:
-                for result in genre_results:
+            if era_results:
+                for result in era_results:
                     print(result)
             else:
                 print("No cluster data found.")

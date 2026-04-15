@@ -15,19 +15,15 @@
 # -- search era
 # -- sub search era with the most songs
 
-import os
 import csv
+from pathlib import Path
 
-file = "data/EvolutionPopUSA_MainData.csv"
-folder = "data"
-if not os.path.exists(folder):
-        os.makedirs(folder)
-    
-if not os.path.exists(file):
-        print("File missing, cannot continue. ")
-        exit()
+BASE_DIR = Path(__file__).resolve().parent
+file_path = BASE_DIR / "data" / "EvolutionPopUSA_MainData.csv"
 
-file_path = os.path.join(folder,file)
+if not file_path.exists():
+        print(f"File missing, cannot continue: {file_path}")
+        raise SystemExit
 
 print("--- Billboard 100 Through The Decades ---")
 print("Type 'exit' to stop searching. \n")
