@@ -1,3 +1,8 @@
+# Normalizing input
+def normalize_text(value):
+    """Return lowercase text for consistent searching."""
+    return value.strip().lower()
+
 # quick use of lambda to find max value
 top_era = max(era_to_songs, key=lambda era: len(era_to_songs[era]["so
 top_count = len(era_to_songs[top_era]["songs"])
