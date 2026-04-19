@@ -4,7 +4,7 @@
 # --- Values are the elements in each column
 
 # Create function using filter
-# - Identify all records with a specific make base on input
+# - Identify all records with a specific make based on input
 
 # Create function using filter
 # - Identify all fuel-efficient cars

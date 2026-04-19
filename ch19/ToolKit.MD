@@ -1,3 +1,8 @@
+# Toolkit file of commands and functions for later use
+
+# Checking for column names prior to working
+head -1 car_data.csv | tr ',' '\n'
+
 # Normalizing input
 def normalize_text(value):
     """Return lowercase text for consistent searching."""

@@ -7,7 +7,7 @@ import csv
 from pathlib import Path
 
 # Storage
-carDatabase = []
+carDatabase = {}
 
 # Variables
 BASE_DIR = Path(__file__).resolve().parent # Folder containing this script.
@@ -30,11 +30,21 @@ def readData():
         reader = csv.DictReader(carData)
         
         for row in reader:
-            carDatabase.append(row)
+            carDatabase[row["id"]] = row
             print(carDatabase)
         return carDatabase
 
-value = readData()
-print(value)  
+def carMake(term):
+    searchTerm = normalize_text(term)
+    make = []
 
+    with open(file_path,newline="",encoding="utf-8") as csv_make:
+        reader = csv.DictReader(csv_make)
+        for row in reader:
+            if searchTerm in normalize_text(row["make"]):
+                make.append(f"{row['make']} {row['body_style']} {row['price']}")
+    print(make)
+    return make
+
+carMake("audi")
 
