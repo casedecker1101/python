@@ -73,6 +73,24 @@ def price(inputPrice):
         for row in results:
             matches.append(f"Price: {row['price']} Make: {row['make']} Body: {row['body_style']} HP: {row['horsepower']} MPG: {row['city_mpg']}")
         return matches
+    
+def costMPG(term):
+    price_per_gallon = float(term)
 
-cinMain = input("Please enter the budget you broke bastard: ")
-print(price(cinMain))
+    with open(file_path, newline="", encoding="utf-8") as csv_cost:
+        reader = csv.DictReader(csv_cost)
+
+        results = map(
+            lambda row: (
+                f"Make: {row['make']} Cost for 100 city miles: ${((100 / int(row['city_mpg'])) * price_per_gallon):.2f}"
+                if row["city_mpg"].isdigit() and int(row["city_mpg"]) > 0
+                else None
+            ),
+            reader,
+        )
+
+        return [result for result in results if result is not None]
+
+
+cinMain = input("Please enter the gas price per gallon: ")
+print(costMPG(cinMain))
