@@ -1,6 +1,7 @@
 """Accesses the Car Database for arbitrary data on automobiles"""
 import csv
 from pathlib import Path
+from functools import reduce
 
 # Storage
 carDatabase = {}
@@ -90,7 +91,42 @@ def costMPG(term):
         )
 
         return [result for result in results if result is not None]
+    
+def avgMPG():
+    
+    with open(file_path, newline='', encoding='utf-8') as csv_avgmpg:
+        reader = csv.DictReader(csv_avgmpg)
+        rows = list(reader)
+        
+        mpg_values = [
+            int(row["city_mpg"])
+            for row in rows
+            if row["city_mpg"].isdigit()
+        ]
+        total = reduce(lambda a, b: a + b, mpg_values)
+        print(f"City Average: {total / len(mpg_values):.2f}")
+    
+        hwmpg_values = [
+            int(row["highway_mpg"])
+            for row in rows
+            if row["highway_mpg"].isdigit()
+        ]
+        total = reduce(lambda a, b: a + b, hwmpg_values)
+        return print(f"Highway Average: {total / len(hwmpg_values):.2f}")
+    
+def avgCarCost():
 
-
-cinMain = input("Please enter the gas price per gallon: ")
-print(costMPG(cinMain))
+    with open(file_path, newline='', encoding='utf-8') as csv_avgcarcost:
+        reader = csv.DictReader(csv_avgcarcost)
+        rows = list(reader)
+    
+        avg_cost = [
+            int(row["price"])
+            for row in rows
+            if row["price"].isdigit()
+        ]
+        
+        total = reduce(lambda a, b: a + b, avg_cost)
+        return print(f"Average Car Cost: {total / len(avg_cost):.2f}")
+    
+avgCarCost()
