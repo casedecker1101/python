@@ -11,6 +11,9 @@ Learning Python through projects organized by chapter.
 - **ch 17/** - Chapter 17 projects (Working with Dates and Times)
 - **ch 18/** - Chapter 18 Set/Dictionary/List
 - **ch 19/** - Chapter 19 CSV Manipulation
+- **ch 20/** - Chapter 20 JSON Manipulation
++ Continue with Project 203 
+  - Beginning daily markdown updates 5/6/2026
 - **games/** - Game project's
   - assault/ - Generalized Assault game
 

@@ -1,12 +1,30 @@
 # Toolkit file of commands and functions for later use
 
+# JSON Files Specifically Top Nested
+# Normalizing input and looping into the first value, traversing root
+full_names = [
+    f"{nameNormal(laureate['firstname'])} {nameNormal(laureate['surname'])}"
+    for prize in read_json["prizes"]
+    for laureate in prize["laureates"]
+
+# Reusable patterns
+
+- `max(..., key=lambda x: ...)` — find the biggest thing by some rule
+- `int(value.strip())` — clean then convert
+- `json.load()` → navigate the structure → iterate the list
+- `for item in data["key"]` — drill into nested data
+
+# Each one is a reusable block. The real skill isn't memorizing syntax, it's recognizing *which pattern fits the problem* — which is exactly what you just did on line 20 when you knew you needed `max()` but had to figure out how to aim it correctly.
+
+# That `key=` pattern alone will show up constantly: sorting, filtering, grouping. You've got it in the toolbox now.
+
 # Checking for column names prior to working
 head -1 car_data.csv | tr ',' '\n'
 
 # Normalizing input
 def normalize_text(value):
     """Return lowercase text for consistent searching."""
-    return value.strip().lower()
+    return value.strip().lower().replace(" ", "")
 
 # quick use of lambda to find max value
 top_era = max(era_to_songs, key=lambda era: len(era_to_songs[era]["so
@@ -76,3 +94,8 @@ while True:
      # newline = '' prevents extra blank rows in some OS environments
      with open(file_path,'a', newline = '') as csvfile:
           writer = csv.writer(csvfile,delimiter=',')
+
+# comprehensions are really just set-builder notation wearing Python clothes
+# reading them left-to-right naturally: "what I want" → "where it comes from" → "filtered by what condition"
+[x * 2  for x in numbers  if x > 0]
+#  ↑ output   ↑ source       ↑ filter (optional)
