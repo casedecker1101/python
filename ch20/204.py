@@ -13,14 +13,27 @@ def nameNormal(value):
     """Return lowercase text for consistent searching"""
     return value.strip().lower().replace(" ", "")
 
-with open("ch20/data/restaurant.json", newline="", encoding='utf-8') as rest_json:
-    read_json = json.load(rest_json)
+restaurants = []
 
-    _dir = os.path.dirname(os.path.abspath(__file__))
+with open("ch20/data/restaurant.json","r",encoding="utf-8") as f:
+    for line in f:
+        line = line.strip()
+        if not line:
+            continue
+        restaurants.append(json.loads(line))
 
-average_score = read_json["score"]
-values = average_score.values()
+# Average score for each restaurant
+total_score = 0
+score_count = 0
 
-average_score = sum(values) / len(values)
+for restaurant in restaurants:
+    for grade_entry in restaurant.get("grades", []):
+        score = grade_entry.get("score")
+        if isinstance(score, (int, float)):
+            total_score += score
+            score_count += 1
 
-print(average_score)
+average_score = total_score / score_count if score_count else 0
+
+print(f"Total scores counted: {score_count}")
+print(f"Average score across all restaurants: {average_score:.2f}")
