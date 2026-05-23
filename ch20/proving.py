@@ -1,23 +1,43 @@
-# how many prizes in economics
-# in peace
-# in literature
-
-def nameNormal(value):
-    """"Return lowercase text for consistent searching"""
-    return value.strip().lower().replace(" ", "")
+# minimum score for each restaurant
 
 import json
 import os
 
-_dir = os.path.dirname(os.path.abspath(__file__))
+def nameNormal(value):
+    """Return lowercase text for consistent searching"""
+    return value.strip().lower().replace(" ", "")
 
-with open(os.path.join(_dir, "data", "prize.json"), encoding='utf-8') as prize_json:
-    read_json = json.load(prize_json)
+restaurants = []
 
-winners = 0
+with open("ch20/data/restaurant.json","r",encoding="utf-8") as f:
+    for line in f:
+        line = line.strip()
+        if not line:
+            continue
+        restaurants.append(json.loads(line))
 
-for prize in read_json.get("prizes", []):
-    if prize.get("category") == "peace":
-        winners += len(prize.get("laureates", []))
+for restaurant in restaurants:
+    name = restaurant.get("name", "Unknown")
+    min_score = None
+    for grade_entry in restaurant.get("grades", []):
+        score = grade_entry.get("score")
+        if isinstance(score, (int, float)):
+            if min_score is None or score < min_score:
+                min_score = score
+    restaurant["min_score"] = min_score
 
-print(f"Total economics winners: {winners}")
+# print the restaurant name and it's minimum score
+for restaurant in restaurants:
+    print(f"Restaurant: {restaurant.get('name', 'Unknown')}, Minimum Score: {restaurant.get('min_score', 'N/A')}")
+    max_score = None
+    for grade_entry in restaurant.get("grades", []):
+        score = grade_entry.get("score")
+        if isinstance(score, (int, float)):
+            if max_score is None or score > max_score:
+                max_score = score
+            restaurant["max_score"] = max_score
+    print(f"Restaurant: {restaurant.get('name', 'Unknown')}, Maximum Score: {max_score}")
+
+
+
+
