@@ -37,3 +37,40 @@ average_score = total_score / score_count if score_count else 0
 
 print(f"Total scores counted: {score_count}")
 print(f"Average score across all restaurants: {average_score:.2f}")
+
+min_score = []
+
+for restaurant in restaurants:
+    for grade_entry in restaurant.get("grades",[]):
+        score = grade_entry.get("score")
+        if isinstance(score, (int, float)):
+            min_score.append(score)
+print(f"Minimum score across all restaurants: {min(min_score)}")
+print(f"Maximum score across all restaurants: {max(min_score)}")
+print(f"Average score across all restaurants: {sum(min_score)/len(min_score):.2f}")
+
+# 4 average score for each type of cuisine in each borough
+
+cuisine_borough_score = {}
+
+for restaurant in restaurants:
+    cuisine = nameNormal(restaurant.get("cuisine"))
+    borough = nameNormal(restaurant.get("borough"))
+    if not cuisine or not borough:
+        continue
+
+    key = (cuisine, borough)
+    for grade_entry in restaurant.get("grades", []):
+        score = grade_entry.get("score")
+        if isinstance(score, (int, float)):
+            cuisine_borough_score.setdefault(key, []).append(score)
+
+cuisine_borough_avg_score = {
+    key: sum(scores) / len(scores)
+    for key, scores in cuisine_borough_score.items()
+    if scores
+}
+
+print("Average score for each type of cuisine in each borough:")
+for (cuisine, borough), avg_score in cuisine_borough_avg_score.items():
+    print(f"{cuisine.title()} in {borough.title()}: {avg_score:.2f}")
