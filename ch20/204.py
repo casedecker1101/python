@@ -82,9 +82,39 @@ for restaurant in restaurants:
         if key not in cuisine_borough_scores:
             cuisine_borough_scores[key] = []
         cuisine_borough_scores[key].extend(scores)
-        for(cuisine_borough, scores) in cuisine_borough_scores.items():
-            average_score = sum(scores) / len(scores) if scores else 0
-            print(f"Cuisine: {cuisine_borough[0]}, Borough: {cuisine_borough[1]}, Average Score: {average_score:.2f}")
-    
-    # 8 Minimum Score for each type of cuisine in each borough
-    min_cuisine_borough_scores = []
+
+for cuisine_borough, scores in cuisine_borough_scores.items():
+    average_score = sum(scores) / len(scores) if scores else 0
+    print(f"Cuisine: {cuisine_borough[0]}, Borough: {cuisine_borough[1]}, Average Score: {average_score:.2f}")
+
+# 8 Minimum score for each type of cuisine in each borough
+cuisine_borough_min_scores = {}
+for restaurant in restaurants:
+    cuisine = restaurant.get("cuisine")
+    borough = restaurant.get("borough")
+    scores = get_scores(restaurant.get("grades", []))
+    if cuisine and borough and scores:
+        key = (nameNormal(cuisine), nameNormal(borough))
+        if key not in cuisine_borough_min_scores:
+            cuisine_borough_min_scores[key] = min(scores)
+        else:
+            cuisine_borough_min_scores[key] = min(cuisine_borough_min_scores[key], min(scores))
+
+for cuisine_borough, min_score in cuisine_borough_min_scores.items():
+    print(f"Cuisine: {cuisine_borough[0]}, Borough: {cuisine_borough[1]}, Minimum Score: {min_score}")
+
+# 9 Maximum score for each type of cuisine in each borough
+cuisine_borough_max_scores = {}
+for restaurant in restaurants:
+    cuisine = restaurant.get("cuisine")
+    borough = restaurant.get("borough")
+    scores = get_scores(restaurant.get("grades", []))
+    if cuisine and borough and scores:
+        key = (nameNormal(cuisine), nameNormal(borough))
+        if key not in cuisine_borough_max_scores:
+            cuisine_borough_max_scores[key] = max(scores)
+        else:
+            cuisine_borough_max_scores[key] = max(cuisine_borough_max_scores[key], max(scores))
+
+for cuisine_borough, max_score in cuisine_borough_max_scores.items():
+    print(f"Cuisine: {cuisine_borough[0]}, Borough: {cuisine_borough[1]}, Maximum Score: {max_score}")
