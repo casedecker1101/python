@@ -12,7 +12,7 @@ Learning Python through projects organized by chapter.
 - **ch 18/** - Chapter 18 Set/Dictionary/List
 - **ch 19/** - Chapter 19 CSV Manipulation
 - **ch 20/** - Chapter 20 JSON Manipulation
-- Completion of 203 - beginning 204
+- **ch 21/** - Chapter 21 Using Lambdas
 - **games/** - Game project's
   - assault/ - Generalized Assault game
 
