@@ -76,7 +76,7 @@ def extract_month(row):
     new_row.update({'Month':MM}) # add the month field to the row
     return new_row
 
-data = fromCSV(path = 'JobReadyPython/data/car_data.csv', delimiter = ',', quotechar = '"')
+data = fromCSV(path = 'data/stocks.csv', delimiter = ',', quotechar = '"')
 print(data[0]) # print the first row of the data to see the structure of the data
 
 data_mapped = map(extract_month, data) # apply the extract_month function to each row of the data
@@ -91,38 +91,3 @@ print(tuple_numbers)
 map_iterator = map(lambda x, y: x + y, list_numbers, tuple_numbers) # add the elements of the two lists together using a lambda function
 map_list = list(map_iterator) # convert the map object to a list
 print(map_list) # print the result of the map function
-
-# 12 using a lambda function to clean data
-def clean_string(value):
-    return value.strip().lower().replace(" ", "")
-print(clean_string("  Hello World  "))
-
-# 13 using a lambda function to clean data in a list of strings
-list_of_strings = [" Hello World ", " Python Programming ", " Data Science "]
-cleaned_strings = list(map(lambda x: x.strip().lower().replace(" ", ""), list_of_strings)) # apply the clean_string function to each element in the list of strings using a lambda function
-print(cleaned_strings)
-
-# 14 using a lambda function to filter data
-list_of_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-filtered_numbers = list(filter(lambda x: x % 2 == 0, list_of_numbers)) # filter the list of numbers to only include even numbers using a lambda function
-print(filtered_numbers)
-
-# 15 using a lambda function to sort data
-list_of_numbers = [5, 2, 9, 1, 5, 6]
-sorted_numbers = sorted(list_of_numbers, key=lambda x: x)
-print(sorted_numbers)
-
-# 16 using a lambda function to find the maximum value
-list_of_numbers = [5, 2, 9, 1, 5, 6]
-max_number = max(list_of_numbers, key=lambda x: x)
-print(max_number)
-
-# 17 using a lambda function to find the minimum value
-list_of_numbers = [5, 2, 9, 1, 5, 6]
-min_number = min(list_of_numbers, key=lambda x: x)
-print(min_number)
-
-# 18 using a lambda function to calculate the average of a list of numbers
-list_of_numbers = [5, 2, 9, 1, 5, 6]
-average = sum(list_of_numbers) / len(list_of_numbers)
-print(average)
