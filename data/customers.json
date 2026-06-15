@@ -1,0 +1,6 @@
+{
+  "customers": [
+    {"id": 1, "name": "Alice", "address": {"city": "LA", "zip": "90001"}},
+    {"id": 2, "name": "Bob", "address": {"city": "NY", "zip": "10001"}}
+  ]
+}
