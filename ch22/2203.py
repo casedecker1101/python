@@ -5,22 +5,34 @@
 # add exceptions - file not found
 
 def readFile():
-    filepath = input("Please enter filepath: ")
-    try:
-        with open(filepath, 'r') as readFile:
-    except FileNotFoundError:
+    while True:
+        filepath = input("Please enter filepath: ")
+
+        try:
+            with open(filepath, 'r') as file_obj:
+                file_lines = file_obj.readlines()
+        except FileNotFoundError:
             print("File not found, please try again.")
-            filepath = input("Please enter filepath: ")
-            with open(filepath, 'r') as readFile:
-            lines = ""
-            nValue = int(input("Please enter lines to read: "))
+            continue
+
+        while True:
+            try:
+                nValue = int(input("Please enter lines to read: "))
+            except ValueError:
+                print("Value not an integer.")
+                continue
+
             if nValue < 0:
-                raise ValueError("Negative value entered.")
-            if len(readFile.readlines()) < nValue:
-                print("File has fewer lines than requested. Reading entire file.")
-            elif nValue != int(nValue):
-                raise ValueError("Value not an integer.")
-            for x in range(nValue):
-                lines += readFile.readline()
-            print(lines, end="")
+                print("Negative value entered.")
+                continue
+
+            break
+# If the requested number of lines is greater, error with a message, read the file and state the number of lines in the file.
+
+        if nValue > len(file_lines):
+            print(f"File has fewer lines than requested. Reading entire file. The file has {len(file_lines)} lines.")
+            nValue = len(file_lines)
+
+        print("".join(file_lines[:nValue]), end="")
+        break
 readFile()
