@@ -1,14 +1,22 @@
-# Write function that takes as input path of two text files
-# Concatenates both into one file
-# Exception for both files
+import os
 
-def twoFiles(filepath1,filepath2): 
-    with open(filepath1, 'r') as f1, open(filepath2,'r') as f2:
+
+def two_files(filepath1, filepath2, output_path="data/combined.txt"):
+    if not os.path.exists(filepath1) or not os.path.exists(filepath2):
+        raise FileNotFoundError("One or more input files are missing")
+
+    with open(filepath1, "r") as f1, open(filepath2, "r") as f2:
         file1 = f1.read()
         file2 = f2.read()
 
-    with open('data/file3.txt','a') as f3:
+    with open(output_path, "w") as f3:
         f3.write(file1 + "\n" + file2)
-        print(f"{file1} + {file2}")
 
-twoFiles("data/flatland01.txt","data/IncidentTicket.txt")
+
+if __name__ == "__main__":
+    try:
+        two_files("data/flatland01.txt", "data/IncidentTicket.txt")
+    except FileNotFoundError as e:
+        print(f"Error: {e}")
+    except IOError as e:
+        print(f"Error: Cannot write to location: {e}")
