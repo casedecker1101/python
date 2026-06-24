@@ -1,0 +1,3 @@
+id,name,address
+1,Alice,"{'city': 'LA', 'zip': '90001'}"
+2,Bob,"{'city': 'NY', 'zip': '10001'}"
