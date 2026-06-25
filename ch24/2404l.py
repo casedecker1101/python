@@ -1,4 +1,3 @@
-import csv
 import json
 import pandas as pd
 
@@ -31,36 +30,3 @@ def normalize_dataset(data):
 
     raise ValueError("Unsupported JSON structure.")
 
-while True:
-    file_input = input("Enter file path, quit to exit: ")
-
-    if file_input == 'quit':
-        break
-
-    try:
-        with open(file_input, encoding="utf-8") as json_file:
-            raw_data = json.load(json_file)
-            dataset = normalize_dataset(raw_data)
-            print("File Open Successfully.")
-    except json.JSONDecodeError:
-        print("Invalid JSON format. Exiting program.")
-        break
-    except FileNotFoundError:
-        print("File not found. Exiting Program.")
-        break
-    except ValueError as exc:
-        print(f"JSON structure error: {exc}")
-        continue
-
-    # save to csv
-    save_file = input("Enter file path for save location: ")
-
-    try:
-        with open(save_file, 'w', newline='', encoding='utf-8') as file_save:
-            fieldnames = dataset[0].keys()
-            writer = csv.DictWriter(file_save, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(dataset)
-            print("CSV file saved successfully.")
-    except IOError:
-        print("File cannot be saved. Check permissions/location.")
